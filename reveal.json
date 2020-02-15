@@ -1,0 +1,7 @@
+{
+  "progress": true,
+  "hash": false,
+  "transition": "slide",
+  "minScale": 0.1,
+  "navigationMode": "linear"
+}
