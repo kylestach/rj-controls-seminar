@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title>Week 2 Slides</title>
+    <link rel="stylesheet" href="./../css/reveal.css" />
+    <link rel="stylesheet" href="./../css/theme/black.css" id="theme" />
+    <link rel="stylesheet" href="./../css/highlight/zenburn.css" />
+    <link rel="stylesheet" href="./../css/print/paper.css" type="text/css" media="print" />
+
+    <script>
+      document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>');
+    </script>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section  data-markdown><script type="text/template">
+# Motion Planning and Control
+## Week 2: Optimal Control
+### Kyle Stachowicz
+</script></section><section  data-markdown><script type="text/template">
+# Review
+State-space form (state `$x$`, control `$u$`):
+`$$\dot x = Ax + Bu$$`
+</script></section><section  data-markdown><script type="text/template">
+# Review: pole placement
+Let `$u = -Kx$`.
+`$$\dot x = (A - BK)x$$`
+Select eigenvalues of `$A - BK$`.
+</script></section><section  data-markdown><script type="text/template">
+# Discrete time
+ - So far, we've assumed time is _continuous_
+ - This is true in physics, but not in how we control things!
+</script></section><section  data-markdown><script type="text/template">
+# Discrete time state-space
+`$$x_{t+1} = f(x_t, u_t)$$`
+`$$x_{t+1} = Ax_t + Bu_t$$`
+</script></section><section  data-markdown><script type="text/template">
+# Discretization
+ - Pick a `$dt$`:
+`$$A_d = I + A_cdt$$`
+`$$B_d = Bdt$$`
+ - Smaller `$dt$` is more accurate!
+</script></section><section  data-markdown><script type="text/template">
+# Discretization (exact)
+`$$A_d = e^{Adt}$$`
+`$$B_d = A_c^{-1}(A_d - I)B$$`
+</script></section><section  data-markdown><script type="text/template">
+# Discrete pole placement
+`$$v_{t+1} = \lambda v_t$$`
+So we want `$0 < \textrm{Re}(\lambda) < 1$`. Complex values will still oscillate.
+</script></section><section  data-markdown><script type="text/template">
+# Multiple inputs
+Case study: differential drive
+![image](diffdrive.png)
+</script></section><section  data-markdown><script type="text/template">
+# Exercise: Drivetrain
+`$$x = \begin{pmatrix}v \\ \omega\end{pmatrix}$$`
+`$$u = \begin{pmatrix}V_l \\ V_r\end{pmatrix}$$`
+</script></section><section  data-markdown><script type="text/template">
+# Exercise: Poles of MIMO systems
+</script></section><section  data-markdown><script type="text/template">
+# Multiple inputs
+Is there a better way?
+</script></section><section  data-markdown><script type="text/template">
+# Multiple inputs
+Is there a better way?
+_Yes, but it'll take a bit of work_
+</script></section><section  data-markdown><script type="text/template">
+# Optimal Control
+ - It's hard to specify how the controller should react with many inputs
+ - Idea: create an _objective function_ describing how "good" a controller is, and find the best controller.
+ - Problem: how can we do this?
+</script></section><section  data-markdown><script type="text/template">
+# Optimization
+ - We want to minimize a cost function $f$.
+ - This is a _lot_ easier if it is _convex_:
+
+![image](convex.jpg)
+</script></section><section  data-markdown><script type="text/template">
+# Optimization
+ - If it's convex: just set the derivative to zero and solve! Example:
+`$$\ell(x) = \frac 1 2 x^2 + x$$`
+`$$\frac{\partial f}{\partial x} = x + 1 = 0 \implies x = -1$$`
+</script></section><section  data-markdown><script type="text/template">
+# Optimization
+ - If it's non-convex: it's only easy (maybe) to find _local_ minima:
+
+![image](nonconvex.png)
+</script></section><section  data-markdown><script type="text/template">
+# Quadratic Functions
+`$$\begin{pmatrix} x_1 & x_2 \end{pmatrix} \begin{pmatrix} a & b \\ b & c \end{pmatrix} \begin{pmatrix} x_1 \\ x_2 \end{pmatrix} = ax_1^2 + 2bx_1x_2 + cx_2^2$$`
+</script></section><section  data-markdown><script type="text/template">
+# Quadratic cost
+`$$\ell(x, u) = \frac 1 2 x^TQx + \frac 1 2 u^TRu$$`
+This is super easy to optimize!
+</script></section><section  data-markdown><script type="text/template">
+# Exercise: Optimization
+</script></section><section  data-markdown><script type="text/template">
+# LQR Problem statement
+`$$\min_{u_t} \sum_{t=1}^{T-1}\frac 1 2\left[x_t^TQx_t + u_t^TRu_t\right] + \frac 1 2 x_TQ_fx_T$$`
+`$$x_{t+1} = Ax_t + Bu_t$$`
+How can we solve this?
+</script></section><section  data-markdown><script type="text/template">
+# Cost-to-go
+ - Define a new function `$P_t(x)$` as the optimal cost starting in `$x$` at time `$t$`.
+    - At the end, we only care about the final term:
+`$$P_T(x) = \frac 1 2 x_T^T Q_f x_T$$`
+    - `$P_0(x_0)$` is the minimum cost.
+
+**So how do we calculate `$P_0$`?**
+</script></section><section  data-markdown><script type="text/template">
+# Dynamic Programming
+Idea: use `$P_T$` to calculate `$P_{T-1}$`.
+`$$P_{T-1} = \min_{u_{T-1}}\left[\ell(x, u) + P_T(f(x, u))\right]$$`
+</script></section><section  data-markdown><script type="text/template">
+# Dynamic Programming
+</script></section><section  data-markdown><script type="text/template"></script></section></div>
+    </div>
+
+    <script src="./../js/reveal.js"></script>
+
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+      // Optional libraries used to extend on reveal.js
+      var deps = [
+        { src: './../plugin/markdown/marked.js', condition: function() { return !!document.querySelector('[data-markdown]'); } },
+        { src: './../plugin/markdown/markdown.js', condition: function() { return !!document.querySelector('[data-markdown]'); } },
+        { src: './../plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+        { src: './../plugin/zoom-js/zoom.js', async: true },
+        { src: './../plugin/notes/notes.js', async: true },
+        { src: './../plugin/math/math.js', async: true }
+      ];
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        dependencies: deps
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal.getQueryHash() || {};
+
+      var options = extend(defaultOptions, {"progress":true,"hash":false,"transition":"slide","minScale":0.1,"navigationMode":"linear"}, queryOptions);
+    </script>
+
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+</html>
