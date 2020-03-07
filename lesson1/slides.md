@@ -40,6 +40,10 @@ be a bit fast-paced if you've never seen them in a class before._
 # Exercises
 https://bit.ly/38urqWL
 
+Click "Open in Playground" to copy this notebook to your Google Drive.
+
+https://github.com/kylestach/rj-controls-seminar
+
 ---
 
 # What is a system?
@@ -244,6 +248,7 @@ _Definition: a system is linear if `$f$` is a linear function of `$x$` and `$u$`
 
 # Exercise: State-Space Equations for a Motor
 <!-- 5 minutes -->
+`$$\dot\omega = \frac{K_t}{JR}V - \frac{K_tK_v}{JR}\omega$$`
 
 ---
 
